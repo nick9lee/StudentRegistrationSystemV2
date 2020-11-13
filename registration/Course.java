@@ -1,0 +1,123 @@
+package registration;
+import java.util.ArrayList;
+
+
+/**
+ * represents a single course
+ * @author Nicho
+ *
+ */
+public class Course {
+
+	private String courseName;
+	private int courseNum;
+	private ArrayList<Course> preReq;
+	private ArrayList<CourseOffering> offeringList;
+
+	public Course(String courseName, int courseNum) {
+		this.setCourseName(courseName);
+		this.setCourseNum(courseNum);
+		// Both of the following are only association
+		preReq = new ArrayList<Course>();
+		offeringList = new ArrayList<CourseOffering>();
+	}
+
+	/**
+	 * adds a section to a course
+	 * @param offering
+	 */
+	public void addOffering(CourseOffering offering) {
+		if (offering != null && offering.getTheCourse() == null) {
+			offering.setTheCourse(this);
+			if (!offering.getTheCourse().getCourseName().equals(courseName)
+					|| offering.getTheCourse().getCourseNum() != courseNum) {
+				System.err.println("Error! This section belongs to another course!");
+				return;
+			}
+			
+			offeringList.add(offering);
+		}
+	}
+
+	public String getCourseName() {
+		return courseName;
+	}
+
+	public void setCourseName(String courseName) {
+		this.courseName = courseName;
+	}
+
+	public int getCourseNum() {
+		return courseNum;
+	}
+
+	public void setCourseNum(int courseNum) {
+		this.courseNum = courseNum;
+	}
+	@Override
+	public String toString () {
+		String st = "\n";
+		st += getCourseName() + " " + getCourseNum ();
+		st += "\nAll course sections:\n";
+		for (CourseOffering c : offeringList)
+			st += c;
+		st += "\n-------\n";
+		return st;
+	}
+
+	/**
+	 * get course with a particular section
+	 * @param i
+	 * @return
+	 */
+	public CourseOffering getCourseOfferingAt(int i) {
+		// TODO Auto-generated method stub
+		if (i < 0 || i >= offeringList.size() )
+			return null;
+		else
+			return offeringList.get(i);
+	}
+	
+	/**
+	 * checks to see if student trying to enroll has nessesary prereqs
+	 * @param student
+	 * @return
+	 */
+	public boolean checkStudentPrereq(Student student) {
+		int i = 0;
+		int j = 0;
+		for(i = 0; i < preReq.size(); i++) {
+			for(CourseOffering x: student.getOfferingList()) {
+				if(x.getTheCourse() == preReq.get(i)) {
+					j++;
+				}	
+			}
+		}
+		if(j == i)
+			return true;
+		return false;
+	}
+	
+	/**
+	 * checks to see if minimum class size is met 
+	 * @return
+	 */
+	public boolean checkMinClassSize() {
+		// is min class size 8 or 9 --------------- double check
+		int i = 0;
+		for(CourseOffering x : offeringList)
+			i += x.getStudentList().size();
+		if(i >= 9)
+			return true;
+		return false;
+	}
+	
+	/**
+	 * adding prereq for a course
+	 * @param course
+	 */
+	public void addPreReq(Course course) {
+		preReq.add(course);
+	}
+
+}
